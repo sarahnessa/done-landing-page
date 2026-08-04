@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Instrument Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-roboto: "Roboto", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@theme {
+  --color-ink: #1E2538;
+  --color-dark: #130f40;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: #ffffff;
+  color: #130f40;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  opacity: 0;
+}
+
+* {
+  scrollbar-width: none;
+}
+
+.hero-background {
+  width: 100%;
+  min-height: 100vh;
+  background-image: url('./assets/check.svg'), linear-gradient(135deg, #3742fa 0%, #81ecec 50%, #6c5ce7 100%);
+  background-attachment: fixed; 
+  background-size: 250px 150px, auto;
+  background-repeat: space, no-repeat;
+}
+
+.reveal-headline {
+  opacity: 0;
+  transform: translateY(40px); /* Start lower down the page */
+  transition: opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform, opacity; /* Optimizes browser rendering */
+}
+
+.reveal-headline.active {
+  opacity: 1;
+  transform: translateY(0); /* Animate smoothly up to native position */
+}
+
+.plan-center-highlight:hover {
+  opacity: 0.85 !important;
+}
+
+
+
+
+
