@@ -37,12 +37,12 @@ const SubscribeForm = () => {
     <div className="subscribe-container">
       <h2 className="mb-2 mt-8">SUBSCRIBE to DONE Updates</h2>
       
-      <form ref={formRef} onSubmit={handleSubscribe}>
+      <form id="subscribe-form" className="flex flex-col sm:flex-row gap-3" ref={formRef} onSubmit={handleSubscribe}>
       
         <input 
           type="user_name" 
           name="user_email" 
-          className="w-70 h-13 border-2 font-roboto text-xs font-700 text-left tracking-widest uppercase px-4 py-2 mr-3 rounded-lg hover:!text-white transition-colors"
+          className="border-2 font-roboto text-xs font-700 text-left tracking-widest uppercase px-4 py-2 h-13 rounded-lg hover:!text-white transition-colors"
           style={{ borderColor: 'white', color: 'white' }}
           placeholder="Enter your email address" 
           required 

@@ -58,6 +58,17 @@ body {
   opacity: 0.85 !important;
 }
 
+.subscribe-container #subscribe-form input {
+  width: 330px;
+}
+
+@media (max-width: 800px) {
+  .subscribe-container #subscribe-form input {
+    width: 100%;
+  }
+}
+
+
 
 
 
