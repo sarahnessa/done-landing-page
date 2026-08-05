@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import ScrollCounter from './ScrollCounter.jsx';
-import ScrollHeadline from './ScrollHeadline.jsx';
+import ScrollCounter from './ScrollCounter.tsx';
+import ScrollHeadline from './ScrollHeadline.tsx';
 import SubscribeForm from './SubscribeForm.tsx';
 
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-export default function ScrollHeadline({ text }) {
+export default function ScrollHeadline({ text }: { text: string }) {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const headlineRef = useRef(null);
 
