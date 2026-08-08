@@ -40,7 +40,7 @@ const SubscribeForm = () => {
       <form id="subscribe-form" className="flex flex-col sm:flex-row gap-3" ref={formRef} onSubmit={handleSubscribe}>
       
         <input 
-          type="user_name" 
+          type="email" 
           name="user_email" 
           className="border-2 font-roboto text-xs font-700 text-left tracking-widest uppercase px-4 py-2 h-13 rounded-lg hover:!text-white transition-colors"
           style={{ borderColor: 'white', color: 'white' }}

@@ -27,12 +27,12 @@ export default function ScrollHeadline({ text }: { text: string }) {
   }, []);
 
   return (
-    <h1 
+    <span
       ref={headlineRef} 
       className={`reveal-headline ${isIntersecting ? 'active' : ''}`}
-      style={{ lineHeight: '20px' }}
+      style={{ display: 'inline-block', marginBottom: '20px' }}
     >
       {text}
-    </h1>
+    </span>
   );
 }
