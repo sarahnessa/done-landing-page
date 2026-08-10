@@ -66,17 +66,18 @@ const TASKS_DEMO = [
   { id: 5, text: 'Schedule dentist appointment', done: true, tag: 'LIFE' },
 ]
 
-function TodoDemo() {
+function TodoDemo(): import("react").JSX.Element {
   const [tasks, setTasks] = useState(TASKS_DEMO)
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState<string>('')
 
-  const toggle = (id: number) =>
-    setTasks((t) => t.map((task) => (task.id === id ? { ...task, done: !task.done } : task)))
+  function toggle(id: number) {
+    return setTasks((t) => t.map((task) => (task.id === id ? { ...task, done: !task.done } : task)));
+  }
 
-  const add = () => {
-    if (!input.trim()) return
-    setTasks((t) => [...t, { id: Date.now(), text: input.trim(), done: false, tag: 'NEW' }])
-    setInput('')
+  function add() {
+    if (!input.trim()) return;
+    setTasks((t) => [...t, { id: Date.now(), text: input.trim(), done: false, tag: 'NEW' }]);
+    setInput('');
   }
 
   return (
@@ -118,10 +119,11 @@ function TodoDemo() {
       </div>
       <div className="border-t-2 flex" style={{ borderColor: DARK }}>
         <input
-          className="flex-1 px-5 py-3 text-sm font-500 outline-none placeholder-neutral-400 bg-white"
+          name="todo-add-input"
+          className="flex-1 px-5 py-3 text-ink text-sm font-500 outline-none placeholder-neutral-400 bg-white"
           placeholder="Add a task and press Enter…"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && add()}
         />
         <button
