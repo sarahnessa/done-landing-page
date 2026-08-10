@@ -360,7 +360,8 @@ function CTA() {
       <div className="max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div>
           <h2 className="text-[clamp(2.5rem,6vw,4.5rem)] font-700 tracking-tight leading-[0.95] mb-12 text-white">
-            <ScrollHeadline text={'Stop planning.'} /><br /><ScrollHeadline text={'Start doing.'} />
+            <ScrollHeadline text={'Stop planning.'} /><br/>
+            <span className="text-white"><ScrollHeadline text={'Start doing.'} /></span>
           </h2>
           <p className="text-base font-400 leading-relaxed text-white/70 max-w-sm">
             Your list is waiting. No setup wizard, no onboarding email sequence, no getting-started tutorial. Just open it and write a task.
