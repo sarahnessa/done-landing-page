@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 export default function ScrollHeadline({ text }: { text: string }) {
   const [isIntersecting, setIsIntersecting] = useState(false);
@@ -11,12 +11,12 @@ export default function ScrollHeadline({ text }: { text: string }) {
         if (entry.isIntersecting) {
           setIsIntersecting(true);
           // Optional: stop observing if you only want the animation to run once
-          observer.unobserve(entry.target); 
+          observer.unobserve(entry.target);
         }
       },
-      { 
-        threshold: 0.1 // Triggers when 10% of the element is visible
-      }
+      {
+        threshold: 0.1, // Triggers when 10% of the element is visible
+      },
     );
 
     if (headlineRef.current) {
@@ -28,9 +28,9 @@ export default function ScrollHeadline({ text }: { text: string }) {
 
   return (
     <span
-      ref={headlineRef} 
-      className={`reveal-headline ${isIntersecting ? 'active' : ''}`}
-      style={{ display: 'inline-block', marginBottom: '20px' }}
+      ref={headlineRef}
+      className={`reveal-headline ${isIntersecting ? "active" : ""}`}
+      style={{ display: "inline-block", marginBottom: "20px" }}
     >
       {text}
     </span>

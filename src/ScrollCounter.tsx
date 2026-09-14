@@ -1,12 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 
 interface ProcessOptions {
-    targetNumber: number,
-    label: string,
-    duration: number
+  targetNumber: number;
+  label: string;
+  duration: number;
 }
 
-export default function ScrollCounter({ targetNumber, label, duration = 2000 }: ProcessOptions) {
+export default function ScrollCounter({
+  targetNumber,
+  label,
+  duration = 2000,
+}: ProcessOptions) {
   const [count, setCount] = useState(0);
   const elementRef = useRef(null);
   const hasAnimated = useRef(false); // Prevents re-triggering if scrolling back up
@@ -22,10 +26,10 @@ export default function ScrollCounter({ targetNumber, label, duration = 2000 }: 
           const animate = (timestamp: number) => {
             if (!startTime) startTime = timestamp;
             const progress = timestamp - startTime;
-            
+
             // Calculate progress percentage (capped at 1)
             const progressPercent = Math.min(progress / duration, 1);
-            
+
             // Calculate current value based on progress
             const currentValue = Math.floor(progressPercent * targetNumber);
             setCount(currentValue);
@@ -39,7 +43,7 @@ export default function ScrollCounter({ targetNumber, label, duration = 2000 }: 
           requestAnimationFrame(animate);
         }
       },
-      { threshold: 0.2 } // Triggers when 20% of the element is visible
+      { threshold: 0.2 }, // Triggers when 20% of the element is visible
     );
 
     if (elementRef.current) {
