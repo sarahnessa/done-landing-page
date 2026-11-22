@@ -18,6 +18,15 @@ html {
   scroll-behavior: smooth;
 }
 
+:focus-visible {
+  outline: 3px solid #3b5bff;
+  outline-offset: 3px;
+}
+
+button, a, input {
+  touch-action: manipulation;
+}
+
 body {
   font-family: var(--font-sans);
   background: #ffffff;
@@ -40,7 +49,7 @@ body {
   min-height: 100vh;
   background-image:
     url("./assets/check.svg"),
-    linear-gradient(135deg, #3742fa 0%, #81ecec 50%, #6c5ce7 100%);
+    linear-gradient(135deg, #2636a0 0%, #087b83 50%, #4935a8 100%);
   background-attachment: fixed;
   background-size:
     250px 150px,
@@ -49,17 +58,37 @@ body {
 }
 
 .reveal-headline {
-  opacity: 0;
-  transform: translateY(40px); /* Start lower down the page */
-  transition:
-    opacity 0.8s ease-out,
-    transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-  will-change: transform, opacity; /* Optimizes browser rendering */
+  opacity: 1;
+  transform: none;
 }
 
-.reveal-headline.active {
-  opacity: 1;
-  transform: translateY(0); /* Animate smoothly up to native position */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-headline {
+    opacity: 0;
+    transform: translateY(40px);
+    transition:
+      opacity 0.8s ease-out,
+      transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform, opacity;
+  }
+
+  .reveal-headline.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal-headline {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
 }
 
 .plan-center-highlight:hover {

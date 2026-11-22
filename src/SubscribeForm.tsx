@@ -1,14 +1,14 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import emailjs from "@emailjs/browser";
 
 const SubscribeForm = () => {
   const CORAL = "#ff7f50";
 
-  const formRef: any = useRef("");
+  const formRef = useRef<HTMLFormElement>(null);
   const [status, setStatus] = useState(""); // 'loading', 'success', 'error'
   const [message, setMessage] = useState("");
 
-  const handleSubscribe = (e: any) => {
+  const handleSubscribe = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus("loading");
 
@@ -17,14 +17,14 @@ const SubscribeForm = () => {
     const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
     emailjs
-      .sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current, {
+      .sendForm(SERVICE_ID, TEMPLATE_ID, formRef.current!, {
         publicKey: PUBLIC_KEY,
       })
       .then(
         () => {
           setStatus("success");
           setMessage("Thank you for subscribing!");
-          formRef.current.reset(); // Clears the input field after success
+          formRef.current?.reset(); // Clears the input field after success
         },
         (error) => {
           setStatus("error");
@@ -44,11 +44,13 @@ const SubscribeForm = () => {
         ref={formRef}
         onSubmit={handleSubscribe}
       >
+        <label className="sr-only" htmlFor="subscribe-email">Email address</label>
         <input
+          id="subscribe-email"
           type="email"
           name="user_email"
           className="border-2 font-roboto text-xs font-700 text-left tracking-widest uppercase px-4 py-2 h-13 rounded-lg hover:!text-white transition-colors"
-          style={{ borderColor: "white", color: "white" }}
+          style={{ borderColor: "white", color: "#130f40", backgroundColor: "white" }}
           placeholder="Enter your email address"
           required
         />
@@ -56,28 +58,31 @@ const SubscribeForm = () => {
         <button
           type="submit"
           disabled={status === "loading"}
-          className="border-2 font-roboto text-xs font-700 tracking-widest uppercase px-8 py-4 h-13 rounded-lg hover:!text-white transition-colors"
+          className="border-2 font-roboto text-xs font-700 tracking-widest uppercase px-8 py-4 h-13 rounded-lg transition-colors"
           style={{ borderColor: "white", color: "white" }}
           onMouseEnter={(e) => {
             (e.currentTarget as HTMLButtonElement).style.backgroundColor =
               CORAL;
+              (e.currentTarget as HTMLButtonElement).style.color = "#130f40";
           }}
           onMouseLeave={(e) => {
             (e.currentTarget as HTMLButtonElement).style.backgroundColor =
               "transparent";
+              (e.currentTarget as HTMLButtonElement).style.color = "white";
           }}
         >
           {status === "loading" ? "Subscribing..." : "Subscribe"}
         </button>
       </form>
 
-      {message && (
-        <p
-          className={`text-gray-600 font-mono text-[11px] tracking-wide mt-4 status-message ${status}`}
-        >
-          {message}
-        </p>
-      )}
+      <p
+        className={`font-mono text-[11px] tracking-wide mt-4 status-message ${status}`}
+        role={status === "error" ? "alert" : "status"}
+        aria-live={status === "error" ? "assertive" : "polite"}
+        aria-atomic="true"
+      >
+        {message}
+      </p>
     </div>
   );
 };

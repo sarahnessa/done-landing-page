@@ -46,12 +46,11 @@ export default function ScrollCounter({
       { threshold: 0.2 }, // Triggers when 20% of the element is visible
     );
 
-    if (elementRef.current) {
-      observer.observe(elementRef.current);
-    }
+    const element = elementRef.current;
+    if (element) observer.observe(element);
 
     return () => {
-      if (elementRef.current) observer.unobserve(elementRef.current);
+      if (element) observer.unobserve(element);
     };
   }, [targetNumber, duration]);
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import ScrollCounter from "./ScrollCounter.tsx";
 import ScrollHeadline from "./ScrollHeadline.tsx";
@@ -87,12 +87,26 @@ const TASKS_DEMO = [
 function TodoDemo(): import("react").JSX.Element {
   const [tasks, setTasks] = useState(TASKS_DEMO);
   const [input, setInput] = useState<string>("");
+  const [focusAfterCompletion, setFocusAfterCompletion] = useState(false);
+  const taskListRef = useRef<HTMLDivElement>(null);
+  const addTaskInputRef = useRef<HTMLInputElement>(null);
 
   function toggle(id: number) {
-    return setTasks((t) =>
-      t.map((task) => (task.id === id ? { ...task, done: !task.done } : task)),
+    const task = tasks.find((item) => item.id === id);
+    if (task && !task.done) setFocusAfterCompletion(true);
+    setTasks((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, done: !item.done } : item,
+      ),
     );
   }
+
+  useLayoutEffect(() => {
+    if (!focusAfterCompletion) return;
+    const nextTask = taskListRef.current?.querySelector<HTMLButtonElement>("button");
+    (nextTask ?? addTaskInputRef.current)?.focus();
+    setFocusAfterCompletion(false);
+  }, [focusAfterCompletion, tasks]);
 
   function add() {
     if (!input.trim()) return;
@@ -129,19 +143,22 @@ function TodoDemo(): import("react").JSX.Element {
           >
             Today — Aug 2
           </span>
-          <span className="font-roboto text-xs text-neutral-400">
+          <span className="font-roboto text-xs text-neutral-600" aria-live="polite" aria-atomic="true">
             {tasks.filter((t) => !t.done).length} remaining
           </span>
         </div>
         <div
+          ref={taskListRef}
           className="divide-y-2"
           style={{ "--tw-divide-opacity": "1" } as React.CSSProperties}
         >
-          {tasks.map((task) => (
-            <div
+          {tasks.filter((task) => !task.done).map((task) => (
+            <button
               key={task.id}
-              className="flex items-start gap-4 px-5 py-4 cursor-pointer group hover:!bg-[#3B5BFF] hover:!text-white transition-colors duration-100"
-              style={{ borderColor: DARK }}
+              type="button"
+              className="w-full text-left flex items-start gap-4 px-5 py-4 cursor-pointer group hover:!bg-[#3B5BFF] hover:!text-white transition-colors duration-100"
+              aria-pressed={task.done}
+              aria-label={`${task.done ? "Mark incomplete" : "Mark complete"}: ${task.text}`}
               onClick={() => toggle(task.id)}
             >
               <div
@@ -165,24 +182,27 @@ function TodoDemo(): import("react").JSX.Element {
               </div>
               <span
                 className={`flex-1 text-sm font-500 leading-snug transition-colors ${
-                  task.done ? "line-through text-neutral-400" : "text-ink"
+                  task.done ? "line-through text-neutral-600" : "text-ink"
                 }`}
               >
                 {task.text}
               </span>
               <span
-                className="font-roboto text-[10px] font-700 tracking-widest border px-1.5 py-0.5 shrink-0 opacity-60"
+                className="font-roboto text-[10px] font-700 tracking-widest border px-1.5 py-0.5 shrink-0 group-hover:!text-white"
                 style={{ borderColor: DARK, color: DARK }}
               >
                 {task.tag}
               </span>
-            </div>
+            </button>
           ))}
         </div>
         <div className="border-t-2 flex" style={{ borderColor: DARK }}>
+          <label className="sr-only" htmlFor="todo-add-input">New task</label>
           <input
+            ref={addTaskInputRef}
+            id="todo-add-input"
             name="todo-add-input"
-            className="flex-1 px-5 py-3 text-ink text-sm font-500 outline-none placeholder-neutral-400 bg-white"
+            className="flex-1 px-5 py-3 text-ink text-sm font-500 outline-none placeholder-neutral-600 bg-white"
             placeholder="Add a task and press Enter…"
             value={input}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -210,7 +230,7 @@ function Nav() {
       style={{ borderColor: DARK }}
     >
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-14">
-        <div className="flex items-center gap-2">
+        <a href="#top" className="flex items-center gap-2" aria-label="DONE home">
           <div
             className="w-6 h-6 bg-[#3B5BFF] border-2 rounded flex items-center justify-center"
             style={{ borderColor: DARK }}
@@ -226,7 +246,7 @@ function Nav() {
             </svg>
           </div>
           <span className="font-700 text-sm tracking-tight">DONE.</span>
-        </div>
+        </a>
         <div className="hidden md:flex items-center gap-8">
           <a
             href="#features"
@@ -248,8 +268,8 @@ function Nav() {
           </a>
         </div>
         <button
-          className="text-white font-roboto text-xs font-700 tracking-widest uppercase px-4 py-2 rounded-lg border-2 hover:!bg-[#ff9867] transition-colors"
-          style={{ backgroundColor: CORAL, borderColor: CORAL }}
+          className="text-ink font-roboto text-xs font-700 tracking-widest uppercase px-4 py-2 rounded-lg border-2 hover:!bg-[#ff9867] transition-colors"
+          style={{ backgroundColor: CORAL, borderColor: CORAL, color: DARK }}
         >
           Get Started Free
         </button>
@@ -260,7 +280,7 @@ function Nav() {
 
 function Hero() {
   return (
-    <section className="text-white max-w-6xl mx-auto px-6 pt-20 pb-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start hero-background">
+    <section className="text-white max-w-6xl mx-auto px-6 pt-20 pb-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start hero-background" aria-labelledby="hero-title">
       <div>
         <div
           className="inline-flex items-center gap-2 border-2 rounded-full px-3 py-1.5 mb-8"
@@ -271,7 +291,7 @@ function Hero() {
             Now in Public Beta
           </span>
         </div>
-        <h1 className="text-[clamp(3rem,8vw,5.5rem)] font-700 leading-[0.92] tracking-tight mb-8">
+        <h1 id="hero-title" className="text-[clamp(3rem,8vw,5.5rem)] font-700 leading-[0.92] tracking-tight mb-8">
           The only
           <br />
           todo app
@@ -283,34 +303,38 @@ function Hero() {
             <span className="absolute inset-0 bg-[#3B5BFF] -skew-x-2 translate-y-1" />
           </span>
         </h1>
-        <p className="text-white text-lg font-400 leading-relaxed text-neutral-600 max-w-md mb-10">
+        <p className="text-white text-lg font-400 leading-relaxed max-w-md mb-10">
           Most productivity apps let you add infinite tasks and feel busy. DONE.
           limits your day to what you can actually finish. It&apos;s
           uncomfortable at first. Then it changes everything.
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <button
-            className="text-white font-roboto text-xs font-700 tracking-widest uppercase px-8 py-4 rounded-lg border-2 hover:!bg-[#ff9867] transition-colors"
-            style={{ backgroundColor: CORAL, borderColor: CORAL }}
+            type="button"
+            className="text-ink font-roboto text-xs font-700 tracking-widest uppercase px-8 py-4 rounded-lg border-2 hover:!bg-[#ff9867] transition-colors"
+            style={{ backgroundColor: CORAL, borderColor: CORAL, color: DARK }}
           >
             Start for Free →
           </button>
           <button
-            className="border-2 font-roboto text-xs font-700 tracking-widest uppercase px-8 py-4 rounded-lg hover:!text-white transition-colors"
+            type="button"
+            className="border-2 font-roboto text-xs font-700 tracking-widest uppercase px-8 py-4 rounded-lg transition-colors"
             style={{ borderColor: "white", color: "white" }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.backgroundColor =
                 CORAL;
+              (e.currentTarget as HTMLButtonElement).style.color = DARK;
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLButtonElement).style.backgroundColor =
                 "transparent";
+              (e.currentTarget as HTMLButtonElement).style.color = "white";
             }}
           >
             Watch Demo
           </button>
         </div>
-        <p className="text-gray-600 font-mono text-[11px] mt-4 tracking-wide">
+        <p className="text-white/90 font-mono text-[11px] mt-4 tracking-wide">
           No credit card. No dark patterns. Cancel by closing the tab.
         </p>
         <SubscribeForm />
@@ -318,10 +342,10 @@ function Hero() {
       <div className="lg:pt-8">
         <TodoDemo />
         <div className="mt-4 flex items-center justify-between">
-          <span className="font-mono text-[11px] text-gray-600 tracking-wide">
+          <span className="font-mono text-[11px] text-white/90 tracking-wide">
             ← Live demo. Click to check off.
           </span>
-          <span className="font-mono text-[11px] text-gray-600 tracking-wide">
+          <span className="font-mono text-[11px] text-white/90 tracking-wide">
             v2.4.1
           </span>
         </div>
@@ -384,11 +408,11 @@ function Features() {
         <h2 className="text-5xl md:text-6xl font-700 tracking-tight leading-none mb-6">
           <ScrollHeadline text={"What it does."} />
           <br />
-          <span className="text-neutral-400">
+          <span className="text-neutral-600">
             <ScrollHeadline text={"What it doesn&apos;t."} />
           </span>
         </h2>
-        <span className="font-roboto text-xs tracking-widest uppercase text-neutral-400 hidden md:block">
+        <span className="font-roboto text-xs tracking-widest uppercase text-neutral-600 hidden md:block">
           06 Features
         </span>
       </div>
@@ -402,7 +426,7 @@ function Features() {
             className="border-r-2 border-b-2 p-8 group hover:bg-[#3B5BFF] hover:text-white transition-colors duration-150"
             style={{ borderColor: DARK }}
           >
-            <div className="font-roboto text-xs font-700 text-neutral-300 group-hover:text-white/40 mb-6 transition-colors">
+            <div className="font-roboto text-xs font-700 text-neutral-500 group-hover:text-white/75 mb-6 transition-colors">
               {f.number}
             </div>
             <h3 className="font-700 text-xl tracking-tight mb-3">{f.title}</h3>
@@ -442,7 +466,7 @@ function Testimonials() {
               </p>
               <div className="border-t-2 pt-4" style={{ borderColor: DARK }}>
                 <div className="font-700 text-sm">{t.name}</div>
-                <div className="font-mono text-[11px] text-neutral-500 tracking-wide mt-0.5">
+                <div className="font-mono text-[11px] text-neutral-600 group-hover:text-white/80 tracking-wide mt-0.5">
                   {t.role}
                 </div>
               </div>
@@ -467,11 +491,15 @@ function Pricing() {
         </h2>
         <div className="flex items-center gap-3">
           <span
-            className={`font-roboto text-xs font-700 tracking-widest uppercase ${!annual ? "text-ink" : "text-neutral-400"}`}
+            className={`font-roboto text-xs font-700 tracking-widest uppercase ${!annual ? "text-ink" : "text-neutral-600"}`}
           >
             Monthly
           </span>
           <button
+            type="button"
+            role="switch"
+            aria-checked={annual}
+            aria-label="Annual billing"
             onClick={() => setAnnual(!annual)}
             className="w-12 h-6 border-2 relative transition-colors rounded-full"
             style={{
@@ -479,13 +507,14 @@ function Pricing() {
               backgroundColor: annual ? DARK : "white",
             }}
           >
-            <div
+            <span
+              aria-hidden="true"
               className="absolute top-0.5 w-4 h-4 bg-[#3B5BFF] border border-[#3B5BFF] rounded-full transition-all"
               style={{ left: annual ? "1.4rem" : "0.1rem" }}
             />
           </button>
           <span
-            className={`font-roboto text-xs font-700 tracking-widest uppercase ${annual ? "text-ink" : "text-neutral-400"}`}
+            className={`font-roboto text-xs font-700 tracking-widest uppercase ${annual ? "text-ink" : "text-neutral-600"}`}
           >
             Annual <span className="text-[#333]">−20%</span>
           </span>
@@ -551,7 +580,7 @@ function Pricing() {
             }}
           >
             <div
-              className={`font-roboto text-xs font-700 tracking-widest uppercase mb-6 ${plan.highlight ? "text-[#3B5BFF]" : "text-neutral-400"}`}
+              className={`font-roboto text-xs font-700 tracking-widest uppercase mb-6 ${plan.highlight ? "text-[#3B5BFF]" : "text-neutral-600"}`}
             >
               {plan.name}
             </div>
@@ -560,7 +589,7 @@ function Pricing() {
                 {plan.price}
               </span>
               <span
-                className={`font-mono text-xs ml-2 ${plan.highlight ? "text-white/60" : "text-neutral-400"}`}
+                className={`font-mono text-xs ml-2 ${plan.highlight ? "text-white/60" : "text-neutral-600"}`}
               >
                 {plan.period}
               </span>
@@ -630,20 +659,22 @@ function CTA() {
         </div>
         <div className="flex flex-col gap-4 lg:items-end">
           <button
-            className="text-white font-roboto text-xs font-700 tracking-widest uppercase px-10 py-5 rounded-lg border-2 hover:!bg-[CORAL] hover:!text-white transition-colors w-full lg:w-auto"
+            className="text-white font-roboto text-xs font-700 tracking-widest uppercase px-10 py-5 rounded-lg border-2 transition-colors w-full lg:w-auto"
             style={{ borderColor: "white", color: "white" }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.backgroundColor =
                 CORAL;
+              (e.currentTarget as HTMLButtonElement).style.color = DARK;
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLButtonElement).style.backgroundColor =
                 "transparent";
+              (e.currentTarget as HTMLButtonElement).style.color = "white";
             }}
           >
             Open DONE. — It&apos;s Free →
           </button>
-          <span className="font-mono text-[11px] text-white/50 tracking-wide">
+          <span className="font-mono text-[11px] text-white/75 tracking-wide">
             Web · iOS · Android · Desktop
           </span>
         </div>
@@ -669,19 +700,18 @@ function Footer() {
             </svg>
           </div>
           <span className="font-700 text-sm tracking-tight">DONE.</span>
-          <span className="font-mono text-xs text-neutral-400 ml-2">
+          <span className="font-mono text-xs text-neutral-600 ml-2">
             © 2026
           </span>
         </div>
         <div className="flex flex-wrap gap-6">
           {["Privacy", "Terms", "Status", "Blog", "GitHub"].map((link) => (
-            <a
+            <span
               key={link}
-              href="#"
-              className="font-roboto text-[11px] tracking-widest uppercase text-neutral-500 hover:text-ink transition-colors"
+              className="font-roboto text-[11px] tracking-widest uppercase text-neutral-600"
             >
               {link}
-            </a>
+            </span>
           ))}
         </div>
       </div>
@@ -691,14 +721,17 @@ function Footer() {
 
 export default function App() {
   return (
-    <div className="bg-white text-ink">
+    <div id="top" className="bg-white text-ink">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-white focus:px-4 focus:py-3 focus:text-ink">Skip to content</a>
       <Nav />
-      <Hero />
-      <Stats />
-      <Features />
-      <Testimonials />
-      <Pricing />
-      <CTA />
+      <main id="main-content">
+        <Hero />
+        <Stats />
+        <Features />
+        <Testimonials />
+        <Pricing />
+        <CTA />
+      </main>
       <Footer />
     </div>
   );
