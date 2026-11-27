@@ -1,42 +1,42 @@
-import { useLayoutEffect, useRef, useState } from "react";
-import { Helmet } from "react-helmet-async";
-import ScrollCounter from "./ScrollCounter.tsx";
-import ScrollHeadline from "./ScrollHeadline.tsx";
-import SubscribeForm from "./SubscribeForm.tsx";
+import { useLayoutEffect, useRef, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
+import ScrollCounter from './ScrollCounter.tsx';
+import ScrollHeadline from './ScrollHeadline.tsx';
+import SubscribeForm from './SubscribeForm.tsx';
 
-const DARK = "#130f40";
-const CORAL = "#ff7f50";
+const DARK = '#130f40';
+const CORAL = '#ff7f50';
 
 const FEATURES = [
   {
-    number: "01",
-    title: "Ruthless Prioritization",
-    body: "Flag what actually matters today. Everything else waits in line. No guilt, no noise.",
+    number: '01',
+    title: 'Ruthless Prioritization',
+    body: 'Flag what actually matters today. Everything else waits in line. No guilt, no noise.',
   },
   {
-    number: "02",
-    title: "Capture in Seconds",
+    number: '02',
+    title: 'Capture in Seconds',
     body: "Type a thought and it's logged. No categories to pick, no project to assign. Just done.",
   },
   {
-    number: "03",
-    title: "Daily Focus View",
+    number: '03',
+    title: 'Daily Focus View',
     body: "Every morning, a blank slate of only your top 3. The rest exists — you just don't see it.",
   },
   {
-    number: "04",
-    title: "Recurring Tasks",
-    body: "Set it once. It comes back. Walk the dog, send the report, call your mom — automated.",
+    number: '04',
+    title: 'Recurring Tasks',
+    body: 'Set it once. It comes back. Walk the dog, send the report, call your mom — automated.',
   },
   {
-    number: "05",
-    title: "Offline First",
-    body: "Your list works on a plane, in the subway, in a dead zone. Sync happens when you reconnect.",
+    number: '05',
+    title: 'Offline First',
+    body: 'Your list works on a plane, in the subway, in a dead zone. Sync happens when you reconnect.',
   },
   {
-    number: "06",
-    title: "Zero Bloat",
-    body: "No integrations page. No AI summaries. No plugin marketplace. Just the list.",
+    number: '06',
+    title: 'Zero Bloat',
+    body: 'No integrations page. No AI summaries. No plugin marketplace. Just the list.',
   },
 ];
 
@@ -44,77 +44,74 @@ const TESTIMONIALS = [
   {
     quote:
       "I've tried Notion, Things, Todoist, Linear — all of them. This is the first one I've kept open for more than a month.",
-    name: "Mara Osei",
-    role: "Product Designer at Vercel",
+    name: 'Mara Osei',
+    role: 'Product Designer at Vercel',
   },
   {
     quote:
-      "The brutally simple interface made me realize I was hiding behind complexity. Now I just do the work.",
-    name: "James Caldwell",
-    role: "Founder, Fieldwork Studio",
+      'The brutally simple interface made me realize I was hiding behind complexity. Now I just do the work.',
+    name: 'James Caldwell',
+    role: 'Founder, Fieldwork Studio',
   },
   {
     quote:
-      "My therapist said I needed less decision fatigue. My todo app agreed and deleted half its features.",
-    name: "Priya Menon",
-    role: "Staff Engineer at Stripe",
+      'My therapist said I needed less decision fatigue. My todo app agreed and deleted half its features.',
+    name: 'Priya Menon',
+    role: 'Staff Engineer at Stripe',
   },
 ];
 
 const TASKS_DEMO = [
-  { id: 1, text: "Review Q3 performance report", done: true, tag: "WORK" },
+  { id: 1, text: 'Review Q3 performance report', done: true, tag: 'WORK' },
   {
     id: 2,
-    text: "Buy groceries — oat milk, sourdough, eggs",
+    text: 'Buy groceries — oat milk, sourdough, eggs',
     done: false,
-    tag: "LIFE",
+    tag: 'LIFE',
   },
   {
     id: 3,
-    text: "Finish chapter 4 of The Power Broker",
+    text: 'Finish chapter 4 of The Power Broker',
     done: false,
-    tag: "READ",
+    tag: 'READ',
   },
   {
     id: 4,
-    text: "Reply to Lars about the Berlin trip",
+    text: 'Reply to Lars about the Berlin trip',
     done: false,
-    tag: "COMMS",
+    tag: 'COMMS',
   },
-  { id: 5, text: "Schedule dentist appointment", done: true, tag: "LIFE" },
+  { id: 5, text: 'Schedule dentist appointment', done: true, tag: 'LIFE' },
 ];
 
-function TodoDemo(): import("react").JSX.Element {
+function TodoDemo(): import('react').JSX.Element {
   const [tasks, setTasks] = useState(TASKS_DEMO);
-  const [input, setInput] = useState<string>("");
-  const [focusAfterCompletion, setFocusAfterCompletion] = useState(false);
+  const [input, setInput] = useState<string>('');
+  const shouldFocusAfterCompletionRef = useRef(false);
   const taskListRef = useRef<HTMLDivElement>(null);
   const addTaskInputRef = useRef<HTMLInputElement>(null);
 
   function toggle(id: number) {
     const task = tasks.find((item) => item.id === id);
-    if (task && !task.done) setFocusAfterCompletion(true);
+    if (task && !task.done) {
+      shouldFocusAfterCompletionRef.current = true;
+    }
     setTasks((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, done: !item.done } : item,
-      ),
+      items.map((item) => (item.id === id ? { ...item, done: !item.done } : item)),
     );
   }
 
   useLayoutEffect(() => {
-    if (!focusAfterCompletion) return;
-    const nextTask = taskListRef.current?.querySelector<HTMLButtonElement>("button");
+    if (!shouldFocusAfterCompletionRef.current) return;
+    shouldFocusAfterCompletionRef.current = false;
+    const nextTask = taskListRef.current?.querySelector<HTMLButtonElement>('button');
     (nextTask ?? addTaskInputRef.current)?.focus();
-    setFocusAfterCompletion(false);
-  }, [focusAfterCompletion, tasks]);
+  }, [tasks]);
 
   function add() {
     if (!input.trim()) return;
-    setTasks((t) => [
-      ...t,
-      { id: Date.now(), text: input.trim(), done: false, tag: "NEW" },
-    ]);
-    setInput("");
+    setTasks((t) => [...t, { id: Date.now(), text: input.trim(), done: false, tag: 'NEW' }]);
+    setInput('');
   }
 
   return (
@@ -129,10 +126,7 @@ function TodoDemo(): import("react").JSX.Element {
         <meta property="og:type" content="website" />
       </Helmet>
 
-      <div
-        className="border-2 rounded-xl overflow-hidden bg-white"
-        style={{ borderColor: DARK }}
-      >
+      <div className="border-2 rounded-xl overflow-hidden bg-white" style={{ borderColor: DARK }}>
         <div
           className="flex items-center justify-between border-b-2 px-5 py-3"
           style={{ borderColor: DARK }}
@@ -143,61 +137,69 @@ function TodoDemo(): import("react").JSX.Element {
           >
             Today — Aug 2
           </span>
-          <span className="font-roboto text-xs text-neutral-600" aria-live="polite" aria-atomic="true">
+          <span
+            className="font-roboto text-xs text-neutral-600"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             {tasks.filter((t) => !t.done).length} remaining
           </span>
         </div>
         <div
           ref={taskListRef}
           className="divide-y-2"
-          style={{ "--tw-divide-opacity": "1" } as React.CSSProperties}
+          style={{ '--tw-divide-opacity': '1' } as React.CSSProperties}
         >
-          {tasks.filter((task) => !task.done).map((task) => (
-            <button
-              key={task.id}
-              type="button"
-              className="w-full text-left flex items-start gap-4 px-5 py-4 cursor-pointer group hover:!bg-[#3B5BFF] hover:!text-white transition-colors duration-100"
-              aria-pressed={task.done}
-              aria-label={`${task.done ? "Mark incomplete" : "Mark complete"}: ${task.text}`}
-              onClick={() => toggle(task.id)}
-            >
-              <div
-                className="mt-0.5 w-4 h-4 shrink-0 border-2 flex items-center justify-center transition-colors"
-                style={{
-                  borderColor: DARK,
-                  backgroundColor: task.done ? DARK : "white",
-                }}
+          {tasks
+            .filter((task) => !task.done)
+            .map((task) => (
+              <button
+                key={task.id}
+                type="button"
+                className="w-full text-left flex items-start gap-4 px-5 py-4 cursor-pointer group hover:!bg-[#3B5BFF] hover:!text-white transition-colors duration-100"
+                aria-pressed={task.done}
+                aria-label={`${task.done ? 'Mark incomplete' : 'Mark complete'}: ${task.text}`}
+                onClick={() => toggle(task.id)}
               >
-                {task.done && (
-                  <svg
-                    viewBox="0 0 10 10"
-                    className="w-2.5 h-2.5"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="2"
-                  >
-                    <polyline points="1.5,5 4,7.5 8.5,2" />
-                  </svg>
-                )}
-              </div>
-              <span
-                className={`flex-1 text-sm font-500 leading-snug transition-colors ${
-                  task.done ? "line-through text-neutral-600" : "text-ink"
-                }`}
-              >
-                {task.text}
-              </span>
-              <span
-                className="font-roboto text-[10px] font-700 tracking-widest border px-1.5 py-0.5 shrink-0 group-hover:!text-white"
-                style={{ borderColor: DARK, color: DARK }}
-              >
-                {task.tag}
-              </span>
-            </button>
-          ))}
+                <div
+                  className="mt-0.5 w-4 h-4 shrink-0 border-2 flex items-center justify-center transition-colors"
+                  style={{
+                    borderColor: DARK,
+                    backgroundColor: task.done ? DARK : 'white',
+                  }}
+                >
+                  {task.done && (
+                    <svg
+                      viewBox="0 0 10 10"
+                      className="w-2.5 h-2.5"
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="2"
+                    >
+                      <polyline points="1.5,5 4,7.5 8.5,2" />
+                    </svg>
+                  )}
+                </div>
+                <span
+                  className={`flex-1 text-sm font-500 leading-snug transition-colors ${
+                    task.done ? 'line-through text-neutral-600' : 'text-ink'
+                  }`}
+                >
+                  {task.text}
+                </span>
+                <span
+                  className="font-roboto text-[10px] font-700 tracking-widest border px-1.5 py-0.5 shrink-0 group-hover:!text-white"
+                  style={{ borderColor: DARK, color: DARK }}
+                >
+                  {task.tag}
+                </span>
+              </button>
+            ))}
         </div>
         <div className="border-t-2 flex" style={{ borderColor: DARK }}>
-          <label className="sr-only" htmlFor="todo-add-input">New task</label>
+          <label className="sr-only" htmlFor="todo-add-input">
+            New task
+          </label>
           <input
             ref={addTaskInputRef}
             id="todo-add-input"
@@ -205,10 +207,8 @@ function TodoDemo(): import("react").JSX.Element {
             className="flex-1 px-5 py-3 text-ink text-sm font-500 outline-none placeholder-neutral-600 bg-white"
             placeholder="Add a task and press Enter…"
             value={input}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setInput(e.target.value)
-            }
-            onKeyDown={(e) => e.key === "Enter" && add()}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && add()}
           />
           <button
             onClick={add}
@@ -225,23 +225,14 @@ function TodoDemo(): import("react").JSX.Element {
 
 function Nav() {
   return (
-    <nav
-      className="border-b-2 sticky top-0 bg-white z-50"
-      style={{ borderColor: DARK }}
-    >
+    <nav className="border-b-2 sticky top-0 bg-white z-50" style={{ borderColor: DARK }}>
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-14">
         <a href="#top" className="flex items-center gap-2" aria-label="DONE home">
           <div
             className="w-6 h-6 bg-[#3B5BFF] border-2 rounded flex items-center justify-center"
             style={{ borderColor: DARK }}
           >
-            <svg
-              viewBox="0 0 12 12"
-              className="w-3 h-3"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-            >
+            <svg viewBox="0 0 12 12" className="w-3 h-3" fill="none" stroke="white" strokeWidth="2">
               <polyline points="1,6 4,9 11,2" />
             </svg>
           </div>
@@ -280,18 +271,24 @@ function Nav() {
 
 function Hero() {
   return (
-    <section className="text-white max-w-6xl mx-auto px-6 pt-20 pb-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start hero-background" aria-labelledby="hero-title">
+    <section
+      className="text-white max-w-6xl mx-auto px-6 pt-20 pb-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start hero-background"
+      aria-labelledby="hero-title"
+    >
       <div>
         <div
           className="inline-flex items-center gap-2 border-2 rounded-full px-3 py-1.5 mb-8"
-          style={{ borderColor: "white" }}
+          style={{ borderColor: 'white' }}
         >
           <div className="w-2 h-2 bg-[#3B5BFF] border border-[#FFFFFF] rounded-full" />
           <span className="font-roboto text-[11px] font-700 tracking-widest uppercase">
             Now in Public Beta
           </span>
         </div>
-        <h1 id="hero-title" className="text-[clamp(3rem,8vw,5.5rem)] font-700 leading-[0.92] tracking-tight mb-8">
+        <h1
+          id="hero-title"
+          className="text-[clamp(3rem,8vw,5.5rem)] font-700 leading-[0.92] tracking-tight mb-8"
+        >
           The only
           <br />
           todo app
@@ -304,9 +301,9 @@ function Hero() {
           </span>
         </h1>
         <p className="text-white text-lg font-400 leading-relaxed max-w-md mb-10">
-          Most productivity apps let you add infinite tasks and feel busy. DONE.
-          limits your day to what you can actually finish. It&apos;s
-          uncomfortable at first. Then it changes everything.
+          Most productivity apps let you add infinite tasks and feel busy. DONE. limits your day to
+          what you can actually finish. It&apos;s uncomfortable at first. Then it changes
+          everything.
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <button
@@ -319,16 +316,14 @@ function Hero() {
           <button
             type="button"
             className="border-2 font-roboto text-xs font-700 tracking-widest uppercase px-8 py-4 rounded-lg transition-colors"
-            style={{ borderColor: "white", color: "white" }}
+            style={{ borderColor: 'white', color: 'white' }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                CORAL;
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = CORAL;
               (e.currentTarget as HTMLButtonElement).style.color = DARK;
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                "transparent";
-              (e.currentTarget as HTMLButtonElement).style.color = "white";
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
+              (e.currentTarget as HTMLButtonElement).style.color = 'white';
             }}
           >
             Watch Demo
@@ -345,9 +340,7 @@ function Hero() {
           <span className="font-mono text-[11px] text-white/90 tracking-wide">
             ← Live demo. Click to check off.
           </span>
-          <span className="font-mono text-[11px] text-white/90 tracking-wide">
-            v2.4.1
-          </span>
+          <span className="font-mono text-[11px] text-white/90 tracking-wide">v2.4.1</span>
         </div>
       </div>
     </section>
@@ -356,10 +349,7 @@ function Hero() {
 
 function Stats() {
   return (
-    <section
-      className="border-y-2 text-white"
-      style={{ borderColor: DARK, backgroundColor: DARK }}
-    >
+    <section className="border-y-2 text-white" style={{ borderColor: DARK, backgroundColor: DARK }}>
       <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-0 divide-x-0 md:divide-x-2 divide-white/20">
         <div className="px-8 py-4">
           <div className="flex font-700 text-4xl tracking-tight text-[#3B5BFF]">
@@ -386,9 +376,7 @@ function Stats() {
           </div>
         </div>
         <div className="px-8 py-4">
-          <div className="font-700 text-4xl tracking-tight text-[#3B5BFF]">
-            &lt; 2s
-          </div>
+          <div className="font-700 text-4xl tracking-tight text-[#3B5BFF]">&lt; 2s</div>
           <div className="font-mono text-xs tracking-widest uppercase text-white/60 mt-1">
             Load Time, Always
           </div>
@@ -406,10 +394,10 @@ function Features() {
         style={{ borderColor: DARK }}
       >
         <h2 className="text-5xl md:text-6xl font-700 tracking-tight leading-none mb-6">
-          <ScrollHeadline text={"What it does."} />
+          <ScrollHeadline text={'What it does.'} />
           <br />
           <span className="text-neutral-600">
-            <ScrollHeadline text={"What it doesn&apos;t."} />
+            <ScrollHeadline text={'What it doesn&apos;t.'} />
           </span>
         </h2>
         <span className="font-roboto text-xs tracking-widest uppercase text-neutral-600 hidden md:block">
@@ -442,11 +430,7 @@ function Features() {
 
 function Testimonials() {
   return (
-    <section
-      id="testimonials"
-      className="border-y-2 bg-[#3B5BFF]"
-      style={{ borderColor: DARK }}
-    >
+    <section id="testimonials" className="border-y-2 bg-[#3B5BFF]" style={{ borderColor: DARK }}>
       <div className="max-w-6xl mx-auto px-6 py-20">
         <div className="font-mono text-xs font-700 tracking-widest uppercase mb-12 text-white">
           /// What people say
@@ -461,9 +445,7 @@ function Testimonials() {
               className="border-r-2 border-b-2 p-8 bg-white hover:bg-[#3B5BFF] hover:text-white transition-colors group"
               style={{ borderColor: DARK }}
             >
-              <p className="font-400 text-base leading-relaxed mb-8">
-                &ldquo;{t.quote}&rdquo;
-              </p>
+              <p className="font-400 text-base leading-relaxed mb-8">&ldquo;{t.quote}&rdquo;</p>
               <div className="border-t-2 pt-4" style={{ borderColor: DARK }}>
                 <div className="font-700 text-sm">{t.name}</div>
                 <div className="font-mono text-[11px] text-neutral-600 group-hover:text-white/80 tracking-wide mt-0.5">
@@ -487,11 +469,11 @@ function Pricing() {
         style={{ borderColor: DARK }}
       >
         <h2 className="text-5xl md:text-6xl font-700 tracking-tight leading-none mb-6">
-          <ScrollHeadline text={"Pricing."} />
+          <ScrollHeadline text={'Pricing.'} />
         </h2>
         <div className="flex items-center gap-3">
           <span
-            className={`font-roboto text-xs font-700 tracking-widest uppercase ${!annual ? "text-ink" : "text-neutral-600"}`}
+            className={`font-roboto text-xs font-700 tracking-widest uppercase ${!annual ? 'text-ink' : 'text-neutral-600'}`}
           >
             Monthly
           </span>
@@ -504,17 +486,17 @@ function Pricing() {
             className="w-12 h-6 border-2 relative transition-colors rounded-full"
             style={{
               borderColor: DARK,
-              backgroundColor: annual ? DARK : "white",
+              backgroundColor: annual ? DARK : 'white',
             }}
           >
             <span
               aria-hidden="true"
               className="absolute top-0.5 w-4 h-4 bg-[#3B5BFF] border border-[#3B5BFF] rounded-full transition-all"
-              style={{ left: annual ? "1.4rem" : "0.1rem" }}
+              style={{ left: annual ? '1.4rem' : '0.1rem' }}
             />
           </button>
           <span
-            className={`font-roboto text-xs font-700 tracking-widest uppercase ${annual ? "text-ink" : "text-neutral-600"}`}
+            className={`font-roboto text-xs font-700 tracking-widest uppercase ${annual ? 'text-ink' : 'text-neutral-600'}`}
           >
             Annual <span className="text-[#333]">−20%</span>
           </span>
@@ -526,47 +508,42 @@ function Pricing() {
       >
         {[
           {
-            id: "1",
-            name: "FREE",
-            price: "$0",
-            period: "forever",
-            features: [
-              "Up to 10 active tasks",
-              "Daily focus view",
-              "Mobile app",
-              "Offline mode",
-            ],
-            cta: "Start Free",
+            id: '1',
+            name: 'FREE',
+            price: '$0',
+            period: 'forever',
+            features: ['Up to 10 active tasks', 'Daily focus view', 'Mobile app', 'Offline mode'],
+            cta: 'Start Free',
             highlight: false,
           },
           {
-            id: "2",
-            name: "PRO",
-            price: annual ? "$7" : "$9",
-            period: "per month",
+            id: '2',
+            name: 'PRO',
+            price: annual ? '$7' : '$9',
+            period: 'per month',
             features: [
-              "Unlimited tasks",
-              "Recurring tasks",
-              "Tags & filters",
-              "Priority support",
-              "Calendar sync",
+              'Unlimited tasks',
+              'Recurring tasks',
+              'Tags & filters',
+              'Priority support',
+              'Calendar sync',
             ],
-            cta: "Get Pro",
+            cta: 'Get Pro',
             highlight: true,
           },
           {
-            id: "3",
-            name: "TEAM",
-            price: annual ? "$12" : "$15",
-            period: "per user / month",
+            id: '3',
+            name: 'TEAM',
+            price: annual ? '$12' : '$15',
+            period: 'per user / month',
             features: [
-              "Everything in Pro",
-              "Shared workspaces",
-              "Admin controls",
-              "Audit logs",
-              "SSO / SAML",
+              'Everything in Pro',
+              'Shared workspaces',
+              'Admin controls',
+              'Audit logs',
+              'SSO / SAML',
             ],
-            cta: "Contact Sales",
+            cta: 'Contact Sales',
             highlight: false,
           },
         ].map((plan) => (
@@ -575,31 +552,26 @@ function Pricing() {
             className="border-r-2 border-b-2 p-8 flex flex-col"
             style={{
               borderColor: DARK,
-              backgroundColor: plan.highlight ? DARK : "white",
-              color: plan.highlight ? "white" : undefined,
+              backgroundColor: plan.highlight ? DARK : 'white',
+              color: plan.highlight ? 'white' : undefined,
             }}
           >
             <div
-              className={`font-roboto text-xs font-700 tracking-widest uppercase mb-6 ${plan.highlight ? "text-[#3B5BFF]" : "text-neutral-600"}`}
+              className={`font-roboto text-xs font-700 tracking-widest uppercase mb-6 ${plan.highlight ? 'text-[#3B5BFF]' : 'text-neutral-600'}`}
             >
               {plan.name}
             </div>
             <div className="mb-6">
-              <span className="text-5xl font-700 tracking-tight">
-                {plan.price}
-              </span>
+              <span className="text-5xl font-700 tracking-tight">{plan.price}</span>
               <span
-                className={`font-mono text-xs ml-2 ${plan.highlight ? "text-white/60" : "text-neutral-600"}`}
+                className={`font-mono text-xs ml-2 ${plan.highlight ? 'text-white/60' : 'text-neutral-600'}`}
               >
                 {plan.period}
               </span>
             </div>
             <ul className="space-y-3 mb-10 flex-1">
               {plan.features.map((f) => (
-                <li
-                  key={f}
-                  className="flex items-center gap-3 text-sm font-500"
-                >
+                <li key={f} className="flex items-center gap-3 text-sm font-500">
                   <div className="w-4 h-4 shrink-0 border-2 border-[#3B5BFF] bg-[#3B5BFF] rounded flex items-center justify-center">
                     <svg
                       viewBox="0 0 10 10"
@@ -616,17 +588,17 @@ function Pricing() {
               ))}
             </ul>
             <button
-              className={`${plan.id === "2" ? "plan-center-highlight" : "plan-side-highlight"} border-2 font-roboto text-xs font-700 tracking-widest uppercase px-6 py-3 rounded-lg transition-colors hover:!bg-[#3B5BFF] hover:!border-[#3B5BFF] hover:!text-white`}
+              className={`${plan.id === '2' ? 'plan-center-highlight' : 'plan-side-highlight'} border-2 font-roboto text-xs font-700 tracking-widest uppercase px-6 py-3 rounded-lg transition-colors hover:!bg-[#3B5BFF] hover:!border-[#3B5BFF] hover:!text-white`}
               style={
                 plan.highlight
                   ? {
-                      borderColor: "#3B5BFF",
-                      backgroundColor: "#3B5BFF",
-                      color: "white",
+                      borderColor: '#3B5BFF',
+                      backgroundColor: '#3B5BFF',
+                      color: 'white',
                     }
                   : {
                       borderColor: DARK,
-                      backgroundColor: "transparent",
+                      backgroundColor: 'transparent',
                       color: DARK,
                     }
               }
@@ -646,30 +618,28 @@ function CTA() {
       <div className="max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         <div>
           <h2 className="text-[clamp(2.5rem,6vw,4.5rem)] font-700 tracking-tight leading-[0.95] mb-12 text-white">
-            <ScrollHeadline text={"Stop planning."} />
+            <ScrollHeadline text={'Stop planning.'} />
             <br />
             <span className="text-white">
-              <ScrollHeadline text={"Start doing."} />
+              <ScrollHeadline text={'Start doing.'} />
             </span>
           </h2>
           <p className="text-base font-400 leading-relaxed text-white/70 max-w-sm">
-            Your list is waiting. No setup wizard, no onboarding email sequence,
-            no getting-started tutorial. Just open it and write a task.
+            Your list is waiting. No setup wizard, no onboarding email sequence, no getting-started
+            tutorial. Just open it and write a task.
           </p>
         </div>
         <div className="flex flex-col gap-4 lg:items-end">
           <button
             className="text-white font-roboto text-xs font-700 tracking-widest uppercase px-10 py-5 rounded-lg border-2 transition-colors w-full lg:w-auto"
-            style={{ borderColor: "white", color: "white" }}
+            style={{ borderColor: 'white', color: 'white' }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                CORAL;
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = CORAL;
               (e.currentTarget as HTMLButtonElement).style.color = DARK;
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                "transparent";
-              (e.currentTarget as HTMLButtonElement).style.color = "white";
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
+              (e.currentTarget as HTMLButtonElement).style.color = 'white';
             }}
           >
             Open DONE. — It&apos;s Free →
@@ -689,23 +659,15 @@ function Footer() {
       <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="flex items-center gap-2">
           <div className="w-5 h-5 bg-[#3B5BFF] border-2 border-[#3B5BFF] rounded flex items-center justify-center">
-            <svg
-              viewBox="0 0 12 12"
-              className="w-3 h-3"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-            >
+            <svg viewBox="0 0 12 12" className="w-3 h-3" fill="none" stroke="white" strokeWidth="2">
               <polyline points="1,6 4,9 11,2" />
             </svg>
           </div>
           <span className="font-700 text-sm tracking-tight">DONE.</span>
-          <span className="font-mono text-xs text-neutral-600 ml-2">
-            © 2026
-          </span>
+          <span className="font-mono text-xs text-neutral-600 ml-2">© 2026</span>
         </div>
         <div className="flex flex-wrap gap-6">
-          {["Privacy", "Terms", "Status", "Blog", "GitHub"].map((link) => (
+          {['Privacy', 'Terms', 'Status', 'Blog', 'GitHub'].map((link) => (
             <span
               key={link}
               className="font-roboto text-[11px] tracking-widest uppercase text-neutral-600"
@@ -722,7 +684,12 @@ function Footer() {
 export default function App() {
   return (
     <div id="top" className="bg-white text-ink">
-      <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-white focus:px-4 focus:py-3 focus:text-ink">Skip to content</a>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:bg-white focus:px-4 focus:py-3 focus:text-ink"
+      >
+        Skip to content
+      </a>
       <Nav />
       <main id="main-content">
         <Hero />

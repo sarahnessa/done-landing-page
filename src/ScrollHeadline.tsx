@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
 export default function ScrollHeadline({ text }: { text: string }) {
   const [isIntersecting, setIsIntersecting] = useState(false);
@@ -29,8 +29,8 @@ export default function ScrollHeadline({ text }: { text: string }) {
   return (
     <span
       ref={headlineRef}
-      className={`reveal-headline ${isIntersecting ? "active" : ""}`}
-      style={{ display: "inline-block", marginBottom: "20px" }}
+      className={`reveal-headline ${isIntersecting ? 'active' : ''}`}
+      style={{ display: 'inline-block', marginBottom: '20px' }}
     >
       {text}
     </span>

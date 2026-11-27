@@ -1,18 +1,16 @@
-@import url("https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
-@import "tailwindcss";
-
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import 'tailwindcss';
 
 @theme {
-  --font-sans: "Instrument Sans", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
-  --font-roboto: "Roboto", sans-serif;
+  --font-sans: 'Instrument Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-roboto: 'Roboto', sans-serif;
 }
 
 @theme {
   --color-ink: #1e2538;
   --color-dark: #130f40;
 }
-
 
 html {
   scroll-behavior: smooth;
@@ -23,7 +21,9 @@ html {
   outline-offset: 3px;
 }
 
-button, a, input {
+button,
+a,
+input {
   touch-action: manipulation;
 }
 
@@ -48,8 +48,7 @@ body {
   width: 100%;
   min-height: 100vh;
   background-image:
-    url("./assets/check.svg"),
-    linear-gradient(135deg, #2636a0 0%, #087b83 50%, #4935a8 100%);
+    url('./assets/check.svg'), linear-gradient(135deg, #2636a0 0%, #087b83 50%, #4935a8 100%);
   background-attachment: fixed;
   background-size:
     250px 150px,

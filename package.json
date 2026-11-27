@@ -4,14 +4,26 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write",
+      "oxlint"
+    ],
+    "*.{json,css,md,html}": [
+      "prettier --write"
+    ]
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build && cp dist/index.html dist/404.html",
-    "lint": "oxlint --jsx-a11y-plugin",
     "test": "vitest run",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "lint": "oxlint && npm run format:check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -33,13 +45,16 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",
     "babel-plugin-react-compiler": "^1.0.0",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
     "gh-pages": "^6.3.0",
-    "jest-axe": "^11.0.0",
+    "husky": "^9.1.7",
     "jsdom": "^31.0.1",
-    "oxlint": "^1.75.0",
+    "lint-staged": "^17.6.2",
+    "oxfmt": "^0.80.0",
+    "oxlint": "^1.95.0",
+    "prettier": "^3.10.1",
     "typescript": "~6.0.2",
     "vite": "^8.2.0",
-    "vitest": "^5.1.1"
+    "vitest": "^5.1.1",
+    "vitest-axe": "^0.1.0"
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from 'react';
 
 interface ProcessOptions {
   targetNumber: number;
@@ -6,16 +6,15 @@ interface ProcessOptions {
   duration: number;
 }
 
-export default function ScrollCounter({
-  targetNumber,
-  label,
-  duration = 2000,
-}: ProcessOptions) {
+export default function ScrollCounter({ targetNumber, label, duration = 2000 }: ProcessOptions) {
   const [count, setCount] = useState(0);
   const elementRef = useRef(null);
   const hasAnimated = useRef(false); // Prevents re-triggering if scrolling back up
 
   useEffect(() => {
+    let animationFrameId: number | null = null;
+    let isActive = true;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         // Trigger animation only once when the element becomes visible
@@ -24,6 +23,7 @@ export default function ScrollCounter({
           let startTime: number | null = null;
 
           const animate = (timestamp: number) => {
+            if (!isActive) return;
             if (!startTime) startTime = timestamp;
             const progress = timestamp - startTime;
 
@@ -36,11 +36,11 @@ export default function ScrollCounter({
 
             // Continue animation frame until duration is reached
             if (progress < duration) {
-              requestAnimationFrame(animate);
+              animationFrameId = requestAnimationFrame(animate);
             }
           };
 
-          requestAnimationFrame(animate);
+          animationFrameId = requestAnimationFrame(animate);
         }
       },
       { threshold: 0.2 }, // Triggers when 20% of the element is visible
@@ -50,7 +50,12 @@ export default function ScrollCounter({
     if (element) observer.observe(element);
 
     return () => {
+      isActive = false;
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+      }
       if (element) observer.unobserve(element);
+      observer.disconnect();
     };
   }, [targetNumber, duration]);
 

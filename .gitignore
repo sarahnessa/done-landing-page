@@ -37,6 +37,7 @@ dist-ssr
 
 # misc
 AGENTS.md
+.prettierrc
 
 
 # ssl/http cert
