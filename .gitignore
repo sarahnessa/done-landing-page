@@ -1,11 +1,19 @@
 # logs
 logs
+log/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# Playwright & BrowserStack artifacts
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+landing-preview.png
 
 # dependencies
 /node_modules
@@ -43,3 +51,11 @@ AGENTS.md
 # ssl/http cert
 cert.pem
 key.pem
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/

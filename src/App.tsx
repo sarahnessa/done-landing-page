@@ -150,51 +150,49 @@ function TodoDemo(): import('react').JSX.Element {
           className="divide-y-2"
           style={{ '--tw-divide-opacity': '1' } as React.CSSProperties}
         >
-          {tasks
-            .filter((task) => !task.done)
-            .map((task) => (
-              <button
-                key={task.id}
-                type="button"
-                className="w-full text-left flex items-start gap-4 px-5 py-4 cursor-pointer group hover:!bg-[#3B5BFF] hover:!text-white transition-colors duration-100"
-                aria-pressed={task.done}
-                aria-label={`${task.done ? 'Mark incomplete' : 'Mark complete'}: ${task.text}`}
-                onClick={() => toggle(task.id)}
+          {tasks.map((task) => (
+            <button
+              key={task.id}
+              type="button"
+              className="w-full text-left flex items-start gap-4 px-5 py-4 cursor-pointer group hover:!bg-[#3B5BFF] hover:!text-white transition-colors duration-100"
+              aria-pressed={task.done}
+              aria-label={`${task.done ? 'Mark incomplete' : 'Mark complete'}: ${task.text}`}
+              onClick={() => toggle(task.id)}
+            >
+              <div
+                className="mt-0.5 w-4 h-4 shrink-0 border-2 flex items-center justify-center transition-colors"
+                style={{
+                  borderColor: DARK,
+                  backgroundColor: task.done ? DARK : 'white',
+                }}
               >
-                <div
-                  className="mt-0.5 w-4 h-4 shrink-0 border-2 flex items-center justify-center transition-colors"
-                  style={{
-                    borderColor: DARK,
-                    backgroundColor: task.done ? DARK : 'white',
-                  }}
-                >
-                  {task.done && (
-                    <svg
-                      viewBox="0 0 10 10"
-                      className="w-2.5 h-2.5"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth="2"
-                    >
-                      <polyline points="1.5,5 4,7.5 8.5,2" />
-                    </svg>
-                  )}
-                </div>
-                <span
-                  className={`flex-1 text-sm font-500 leading-snug transition-colors ${
-                    task.done ? 'line-through text-neutral-600' : 'text-ink'
-                  }`}
-                >
-                  {task.text}
-                </span>
-                <span
-                  className="font-roboto text-[10px] font-700 tracking-widest border px-1.5 py-0.5 shrink-0 group-hover:!text-white"
-                  style={{ borderColor: DARK, color: DARK }}
-                >
-                  {task.tag}
-                </span>
-              </button>
-            ))}
+                {task.done && (
+                  <svg
+                    viewBox="0 0 10 10"
+                    className="w-2.5 h-2.5"
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="2"
+                  >
+                    <polyline points="1.5,5 4,7.5 8.5,2" />
+                  </svg>
+                )}
+              </div>
+              <span
+                className={`flex-1 text-sm font-500 leading-snug transition-colors ${
+                  task.done ? 'line-through text-neutral-600' : 'text-ink'
+                }`}
+              >
+                {task.text}
+              </span>
+              <span
+                className="font-roboto text-[10px] font-700 tracking-widest border px-1.5 py-0.5 shrink-0 group-hover:!text-white"
+                style={{ borderColor: DARK, color: DARK }}
+              >
+                {task.tag}
+              </span>
+            </button>
+          ))}
         </div>
         <div className="border-t-2 flex" style={{ borderColor: DARK }}>
           <label className="sr-only" htmlFor="todo-add-input">
@@ -271,76 +269,76 @@ function Nav() {
 
 function Hero() {
   return (
-    <section
-      className="text-white max-w-6xl mx-auto px-6 pt-20 pb-24 grid grid-cols-1 lg:grid-cols-2 gap-16 items-start hero-background"
-      aria-labelledby="hero-title"
-    >
-      <div>
-        <div
-          className="inline-flex items-center gap-2 border-2 rounded-full px-3 py-1.5 mb-8"
-          style={{ borderColor: 'white' }}
-        >
-          <div className="w-2 h-2 bg-[#3B5BFF] border border-[#FFFFFF] rounded-full" />
-          <span className="font-roboto text-[11px] font-700 tracking-widest uppercase">
-            Now in Public Beta
-          </span>
-        </div>
-        <h1
-          id="hero-title"
-          className="text-[clamp(3rem,8vw,5.5rem)] font-700 leading-[0.92] tracking-tight mb-8"
-        >
-          The only
-          <br />
-          todo app
-          <br />
-          that says
-          <br />
-          <span className="relative inline-block">
-            <span className="relative z-10">no.</span>
-            <span className="absolute inset-0 bg-[#3B5BFF] -skew-x-2 translate-y-1" />
-          </span>
-        </h1>
-        <p className="text-white text-lg font-400 leading-relaxed max-w-md mb-10">
-          Most productivity apps let you add infinite tasks and feel busy. DONE. limits your day to
-          what you can actually finish. It&apos;s uncomfortable at first. Then it changes
-          everything.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <button
-            type="button"
-            className="text-ink font-roboto text-xs font-700 tracking-widest uppercase px-8 py-4 rounded-lg border-2 hover:!bg-[#ff9867] transition-colors"
-            style={{ backgroundColor: CORAL, borderColor: CORAL, color: DARK }}
+    <section className="text-white w-full hero-background" aria-labelledby="hero-title">
+      <div className="max-w-6xl mx-auto px-6 pt-20 pb-24 flex flex-col gap-12">
+        <div>
+          <div
+            className="inline-flex items-center gap-2 border-2 rounded-full px-3 py-1.5 mb-8"
+            style={{ borderColor: 'white' }}
           >
-            Start for Free →
-          </button>
-          <button
-            type="button"
-            className="border-2 font-roboto text-xs font-700 tracking-widest uppercase px-8 py-4 rounded-lg transition-colors"
-            style={{ borderColor: 'white', color: 'white' }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = CORAL;
-              (e.currentTarget as HTMLButtonElement).style.color = DARK;
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
-              (e.currentTarget as HTMLButtonElement).style.color = 'white';
-            }}
+            <div className="w-2 h-2 bg-[#3B5BFF] border border-[#FFFFFF] rounded-full" />
+            <span className="font-roboto text-[11px] font-700 tracking-widest uppercase">
+              Now in Public Beta
+            </span>
+          </div>
+          <h1
+            id="hero-title"
+            className="text-[clamp(3rem,8vw,5.5rem)] font-700 leading-[0.92] tracking-tight mb-8"
           >
-            Watch Demo
-          </button>
+            The only
+            <br />
+            todo app
+            <br />
+            that says
+            <br />
+            <span className="relative inline-block">
+              <span className="relative z-10">no.</span>
+              <span className="absolute inset-0 bg-[#3B5BFF] -skew-x-2 translate-y-1" />
+            </span>
+          </h1>
+          <p className="text-white text-lg font-400 leading-relaxed max-w-md mb-10">
+            Most productivity apps let you add infinite tasks and feel busy. DONE. limits your day
+            to what you can actually finish. It&apos;s uncomfortable at first. Then it changes
+            everything.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              type="button"
+              className="text-ink font-roboto text-xs font-700 tracking-widest uppercase px-8 py-4 rounded-lg border-2 hover:!bg-[#ff9867] transition-colors"
+              style={{ backgroundColor: CORAL, borderColor: CORAL, color: DARK }}
+            >
+              Start for Free →
+            </button>
+            <button
+              type="button"
+              className="border-2 font-roboto text-xs font-700 tracking-widest uppercase px-8 py-4 rounded-lg transition-colors"
+              style={{ borderColor: 'white', color: 'white' }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor = CORAL;
+                (e.currentTarget as HTMLButtonElement).style.color = DARK;
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
+                (e.currentTarget as HTMLButtonElement).style.color = 'white';
+              }}
+            >
+              Watch Demo
+            </button>
+          </div>
+          <p className="text-white/90 font-mono text-[11px] mt-4 tracking-wide">
+            No credit card. No dark patterns. Cancel by closing the tab.
+          </p>
+          <SubscribeForm />
         </div>
-        <p className="text-white/90 font-mono text-[11px] mt-4 tracking-wide">
-          No credit card. No dark patterns. Cancel by closing the tab.
-        </p>
-        <SubscribeForm />
-      </div>
-      <div className="lg:pt-8">
-        <TodoDemo />
-        <div className="mt-4 flex items-center justify-between">
-          <span className="font-mono text-[11px] text-white/90 tracking-wide">
-            ← Live demo. Click to check off.
-          </span>
-          <span className="font-mono text-[11px] text-white/90 tracking-wide">v2.4.1</span>
+
+        <div className="w-full">
+          <TodoDemo />
+          <div className="mt-4 flex items-center justify-between">
+            <span className="font-mono text-[11px] text-white/90 tracking-wide">
+              ← Live demo. Click to check off.
+            </span>
+            <span className="font-mono text-[11px] text-white/90 tracking-wide">v2.4.1</span>
+          </div>
         </div>
       </div>
     </section>
@@ -615,7 +613,7 @@ function Pricing() {
 function CTA() {
   return (
     <section className="border-t-2 bg-[#3B5BFF]" style={{ borderColor: DARK }}>
-      <div className="max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div className="max-w-6xl mx-auto px-6 py-24 flex flex-col gap-12">
         <div>
           <h2 className="text-[clamp(2.5rem,6vw,4.5rem)] font-700 tracking-tight leading-[0.95] mb-12 text-white">
             <ScrollHeadline text={'Stop planning.'} />
@@ -629,9 +627,9 @@ function CTA() {
             tutorial. Just open it and write a task.
           </p>
         </div>
-        <div className="flex flex-col gap-4 lg:items-end">
+        <div className="flex flex-col gap-4 w-full">
           <button
-            className="text-white font-roboto text-xs font-700 tracking-widest uppercase px-10 py-5 rounded-lg border-2 transition-colors w-full lg:w-auto"
+            className="text-white font-roboto text-xs font-700 tracking-widest uppercase px-10 py-5 rounded-lg border-2 transition-colors w-full"
             style={{ borderColor: 'white', color: 'white' }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.backgroundColor = CORAL;

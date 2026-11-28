@@ -6,20 +6,35 @@ interface ProcessOptions {
   duration: number;
 }
 
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' &&
+  (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false);
+
 export default function ScrollCounter({ targetNumber, label, duration = 2000 }: ProcessOptions) {
-  const [count, setCount] = useState(0);
-  const elementRef = useRef(null);
+  const [count, setCount] = useState(() => (prefersReducedMotion() ? targetNumber : 0));
+  const elementRef = useRef<HTMLDivElement>(null);
   const hasAnimated = useRef(false); // Prevents re-triggering if scrolling back up
 
   useEffect(() => {
     let animationFrameId: number | null = null;
     let isActive = true;
 
+    const element = elementRef.current;
+    if (!element || !('IntersectionObserver' in window)) {
+      setCount(targetNumber);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         // Trigger animation only once when the element becomes visible
         if (entry.isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true;
+          if (prefersReducedMotion()) {
+            setCount(targetNumber);
+            observer.unobserve(entry.target);
+            return;
+          }
           let startTime: number | null = null;
 
           const animate = (timestamp: number) => {
@@ -34,9 +49,11 @@ export default function ScrollCounter({ targetNumber, label, duration = 2000 }: 
             const currentValue = Math.floor(progressPercent * targetNumber);
             setCount(currentValue);
 
-            // Continue animation frame until duration is reached
+            // Continue animation frame until duration is reached, then snap to exact target
             if (progress < duration) {
               animationFrameId = requestAnimationFrame(animate);
+            } else {
+              setCount(targetNumber);
             }
           };
 
@@ -46,8 +63,7 @@ export default function ScrollCounter({ targetNumber, label, duration = 2000 }: 
       { threshold: 0.2 }, // Triggers when 20% of the element is visible
     );
 
-    const element = elementRef.current;
-    if (element) observer.observe(element);
+    observer.observe(element);
 
     return () => {
       isActive = false;

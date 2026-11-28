@@ -2,28 +2,36 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function ScrollHeadline({ text }: { text: string }) {
   const [isIntersecting, setIsIntersecting] = useState(false);
-  const headlineRef = useRef(null);
+  const headlineRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
+    const element = headlineRef.current;
+    if (!element || !('IntersectionObserver' in window)) {
+      setIsIntersecting(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Trigger animation when the element enters the viewport
         if (entry.isIntersecting) {
           setIsIntersecting(true);
-          // Optional: stop observing if you only want the animation to run once
           observer.unobserve(entry.target);
         }
       },
-      {
-        threshold: 0.1, // Triggers when 10% of the element is visible
-      },
+      { threshold: 0.1 },
     );
 
-    if (headlineRef.current) {
-      observer.observe(headlineRef.current);
-    }
+    observer.observe(element);
 
-    return () => observer.disconnect();
+    // Fallback: ensure headlines never remain hidden if observer doesn't fire (e.g., WebKit full-page capture)
+    const fallbackTimer = window.setTimeout(() => {
+      setIsIntersecting(true);
+    }, 1000);
+
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(fallbackTimer);
+    };
   }, []);
 
   return (
